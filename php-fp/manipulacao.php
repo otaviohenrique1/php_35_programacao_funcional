@@ -22,12 +22,21 @@ function convertePaisParaLetraMaiuscula(array $pais)
   return $pais;
 }
 
-function verificaSePaisTemEspacoNoNome(array $pais): bool
-{
-  return strpos($pais['pais'], ' ') !== false;
+$verificaSePaisTemEspacoNoNome = fn (array $pais): bool => strpos($pais['pais'], ' ') !== false;
+
+$nomeDePaisesEmMaiusculo = fn($dados) => array_map('convertePaisParaLetraMaiuscula', $dados);
+$filtraPaisesSemEspacoNoNome = fn($dados) => array_filter($dados, $verificaSePaisTemEspacoNoNome);
+
+function pipe(callable ...$funcoes) {
+  return fn($valor) => array_reduce(
+    $funcoes,
+    fn($valorAcumulado, callable $funcaoAtual) => $funcaoAtual($valorAcumulado),
+    $valor,
+  );
 }
 
-$dados = array_map('convertePaisParaLetraMaiuscula', $dados);
-$dados = array_filter($dados, 'verificaSePaisTemEspacoNoNome');
+$funcoes = pipe($filtraPaisesSemEspacoNoNome, $nomeDePaisesEmMaiusculo);
+$dados = $funcoes($dados);
 
 var_dump($dados);
+
