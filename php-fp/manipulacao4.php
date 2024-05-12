@@ -3,7 +3,9 @@
 require_once 'vendor/autoload.php';
 
 use function igorw\pipeline;
+use Alura\Fp\Maybe;
 
+/** @var Maybe $dados */
 $dados = require 'dados.php';
 
 function convertePaisParaLetraMaiuscula(array $pais)
@@ -14,11 +16,11 @@ function convertePaisParaLetraMaiuscula(array $pais)
 
 $verificaSePaisTemEspacoNoNome = fn (array $pais): bool => strpos($pais['pais'], ' ') !== false;
 
-$nomeDePaisesEmMaiusculo = fn($dados) => array_map('convertePaisParaLetraMaiuscula', $dados);
-$filtraPaisesSemEspacoNoNome = fn($dados) => array_filter($dados, $verificaSePaisTemEspacoNoNome);
+$nomeDePaisesEmMaiusculo = fn(Maybe $dados) => Maybe::of(array_map('convertePaisParaLetraMaiuscula', $dados->getOrElse([])));
+$filtraPaisesSemEspacoNoNome = fn(Maybe $dados) => Maybe::of(array_filter($dados->getOrElse([]), $verificaSePaisTemEspacoNoNome));
 
 $funcoes = pipeline($filtraPaisesSemEspacoNoNome, $nomeDePaisesEmMaiusculo);
 $dados = $funcoes($dados);
 
-var_dump($dados);
+var_dump($dados->getOrElse([]));
 

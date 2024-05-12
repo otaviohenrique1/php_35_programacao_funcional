@@ -1,5 +1,8 @@
 <?php
 
+use Alura\Fp\Maybe;
+
+/** @var Maybe $dados */
 $dados = require 'dados.php';
 
 // $contador = 0;
@@ -12,7 +15,7 @@ $dados = require 'dados.php';
 //   $contador++;
 // });
 
-$contador = count($dados);
+$contador = count($dados->getOrElse([]));
 
 echo "Numero de países: $contador\n";
 
@@ -24,8 +27,8 @@ function convertePaisParaLetraMaiuscula(array $pais)
 
 $verificaSePaisTemEspacoNoNome = fn (array $pais): bool => strpos($pais['pais'], ' ') !== false;
 
-$nomeDePaisesEmMaiusculo = fn($dados) => array_map('convertePaisParaLetraMaiuscula', $dados);
-$filtraPaisesSemEspacoNoNome = fn($dados) => array_filter($dados, $verificaSePaisTemEspacoNoNome);
+$nomeDePaisesEmMaiusculo = fn(Maybe $dados) => Maybe::of(array_map('convertePaisParaLetraMaiuscula', $dados->getOrElse([])));
+$filtraPaisesSemEspacoNoNome = fn(Maybe $dados) => Maybe::of(array_filter($dados->getOrElse([]), $verificaSePaisTemEspacoNoNome));
 
 function pipe(callable ...$funcoes) {
   return fn($valor) => array_reduce(

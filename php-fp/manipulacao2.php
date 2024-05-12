@@ -1,8 +1,11 @@
 <?php
 
+use Alura\Fp\Maybe;
+
+/** @var Maybe $dados */
 $dados = require 'dados.php';
 
-$brasil = $dados[0];
+// $brasil = $dados[0];
 
 $somaMedalhas = fn (int $medalhasAcumuladas, int $medalhas) => $medalhasAcumuladas + $medalhas;
 
@@ -11,4 +14,4 @@ $somaMedalhas = fn (int $medalhasAcumuladas, int $medalhas) => $medalhasAcumulad
 
 $medalhasAcumuladas = fn (int $medalhasAcumuladas, array $pais) => $medalhasAcumuladas + array_reduce($pais['medalhas'], $somaMedalhas, 0);
 
-echo array_reduce($dados, $medalhasAcumuladas, 0);
+echo (string) Maybe::of(array_reduce($dados->getOrElse([]), $medalhasAcumuladas, 0));
